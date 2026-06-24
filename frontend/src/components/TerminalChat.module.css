@@ -1,0 +1,246 @@
+.terminal {
+  display: flex;
+  flex-direction: column;
+  width: min(920px, calc(100vw - 2rem));
+  min-height: min(78vh, 720px);
+  margin: 0 auto;
+  border: 1px solid var(--matrix-border);
+  border-radius: 6px;
+  background: var(--matrix-panel);
+  box-shadow:
+    0 0 24px rgba(0, 255, 65, 0.12),
+    inset 0 0 40px rgba(0, 255, 65, 0.04);
+  backdrop-filter: blur(2px);
+  overflow: hidden;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--matrix-border);
+  background: rgba(0, 20, 0, 0.55);
+}
+
+.windowControls {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.dotRed,
+.dotAmber,
+.dotGreen {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dotRed {
+  background: var(--matrix-red);
+  box-shadow: 0 0 6px var(--matrix-red);
+}
+
+.dotAmber {
+  background: var(--matrix-amber);
+  box-shadow: 0 0 6px var(--matrix-amber);
+}
+
+.dotGreen {
+  background: var(--matrix-green);
+  box-shadow: 0 0 6px var(--matrix-green);
+}
+
+.title {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--matrix-green-dim);
+}
+
+.titleGlow {
+  color: var(--matrix-green-glow);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.titleDivider {
+  margin: 0 0.35rem;
+  color: rgba(0, 255, 65, 0.45);
+}
+
+.status {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+}
+
+.statusReady {
+  color: var(--matrix-green-dim);
+}
+
+.statusBusy {
+  color: var(--matrix-amber);
+  animation: pulse-glow 1.2s ease-in-out infinite;
+}
+
+.output {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.1rem;
+  line-height: 1.55;
+  font-size: 0.92rem;
+  scrollbar-color: var(--matrix-green-dim) transparent;
+  scrollbar-width: thin;
+}
+
+.output::-webkit-scrollbar {
+  width: 6px;
+}
+
+.output::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.35);
+  border-radius: 3px;
+}
+
+.bootLine,
+.messageUser,
+.messageAssistant,
+.loadingLine,
+.errorLine {
+  margin: 0 0 0.85rem;
+  animation: fade-in 0.35s ease-out;
+}
+
+.prompt {
+  color: var(--matrix-green-glow);
+  margin-right: 0.45rem;
+  user-select: none;
+}
+
+.bootLine {
+  color: var(--matrix-green-dim);
+}
+
+.messageUser .messageText {
+  margin: 0.2rem 0 0;
+  color: #b8ffc8;
+}
+
+.messageAssistant .messageText {
+  margin: 0.2rem 0 0;
+  color: var(--matrix-green);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.loadingLine {
+  color: var(--matrix-green-dim);
+}
+
+.loadingDots {
+  letter-spacing: 0.05em;
+}
+
+.dotAnim {
+  display: inline-block;
+  animation: blink 1s step-end infinite;
+}
+
+.errorLine {
+  color: var(--matrix-red);
+  text-shadow: 0 0 8px rgba(255, 51, 51, 0.45);
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--matrix-border);
+  background: rgba(0, 16, 0, 0.65);
+}
+
+.inputLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid rgba(0, 255, 65, 0.25);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--matrix-green-glow);
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: rgba(0, 255, 65, 0.35);
+}
+
+.input:focus {
+  border-color: var(--matrix-green);
+  box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.15);
+}
+
+.input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sendButton {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid rgba(0, 255, 65, 0.45);
+  border-radius: 3px;
+  background: rgba(0, 255, 65, 0.08);
+  color: var(--matrix-green-glow);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.sendButton:hover:not(:disabled) {
+  background: rgba(0, 255, 65, 0.18);
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.25);
+}
+
+.sendButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .terminal {
+    width: calc(100vw - 1rem);
+    min-height: 85vh;
+  }
+
+  .title {
+    font-size: 0.62rem;
+  }
+
+  .status {
+    display: none;
+  }
+}

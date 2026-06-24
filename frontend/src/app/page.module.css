@@ -1,0 +1,35 @@
+.main {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.tagline {
+  margin: 0 auto 1rem;
+  width: min(920px, calc(100vw - 2rem));
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 65, 0.55);
+  text-align: center;
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.footer {
+  margin: 1rem auto 0;
+  width: min(920px, calc(100vw - 2rem));
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  color: rgba(0, 255, 65, 0.35);
+}

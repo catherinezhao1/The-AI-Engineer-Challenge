@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from openai import OpenAI
 import os
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,32 +14,88 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+CLAUDE_API_URL = os.getenv(
+    "CLAUDE_API_URL",
+    "https://lgts1tetamapi01.azure-api.net/claude/anthropic/v1/messages",
+)
+CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
+SYSTEM_PROMPT = "You are a supportive mental coach."
+
+
+def get_api_key() -> str:
+    """Return the Azure API subscription key from the environment."""
+    api_key = os.getenv("API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="API_KEY not configured")
+    return api_key
+
+
+def extract_reply(data: dict) -> str:
+    """Pull assistant text from an Anthropic-style messages response."""
+    content = data.get("content", [])
+    if not isinstance(content, list):
+        raise HTTPException(
+            status_code=500,
+            detail="Unexpected response format from Claude API",
+        )
+
+    text_parts = [
+        block.get("text", "")
+        for block in content
+        if isinstance(block, dict) and block.get("type") == "text"
+    ]
+    reply = "".join(text_parts).strip()
+    if not reply:
+        raise HTTPException(
+            status_code=500,
+            detail="No text reply received from Claude API",
+        )
+    return reply
+
 
 class ChatRequest(BaseModel):
     message: str
+
 
 @app.get("/")
 def root():
     return {"status": "ok"}
 
+
 @app.post("/api/chat")
 def chat(request: ChatRequest):
-    if not os.getenv("OPENAI_API_KEY"):
-        raise HTTPException(status_code=500, detail="OPENAI_API_KEY not configured")
-    
+    api_key = get_api_key()
+
     try:
-        user_message = request.message
-        response = client.chat.completions.create(
-            model="gpt-5",
-            messages=[
-                {"role": "system", "content": "You are a supportive mental coach."},
-                {"role": "user", "content": user_message}
-            ]
+        response = requests.post(
+            CLAUDE_API_URL,
+            params={"subscription-key": api_key},
+            json={
+                "model": CLAUDE_MODEL,
+                "max_tokens": 1024,
+                "system": SYSTEM_PROMPT,
+                "messages": [{"role": "user", "content": request.message}],
+            },
+            timeout=30,
         )
-        return {"reply": response.choices[0].message.content}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error calling OpenAI API: {str(e)}")
+        response.raise_for_status()
+        return {"reply": extract_reply(response.json())}
+    except requests.HTTPError as exc:
+        error_detail = str(exc)
+        if exc.response is not None:
+            try:
+                error_detail = exc.response.json()
+            except ValueError:
+                error_detail = exc.response.text or error_detail
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error calling Claude API: {error_detail}",
+        ) from exc
+    except requests.RequestException as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error calling Claude API: {str(exc)}",
+        ) from exc
