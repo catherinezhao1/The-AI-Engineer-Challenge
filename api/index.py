@@ -22,7 +22,7 @@ CLAUDE_API_URL = os.getenv(
     "https://lgts1tetamapi01.azure-api.net/claude/anthropic/v1/messages",
 )
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
-SYSTEM_PROMPT = "You are a supportive mental coach."
+SYSTEM_PROMPT = "You are a supportive mental coach. Try to be brief and concrete when answering questions."
 
 
 def get_api_key() -> str:
